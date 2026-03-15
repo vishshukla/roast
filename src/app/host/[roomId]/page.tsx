@@ -8,6 +8,7 @@ import HostDebate from "@/components/host/HostDebate";
 import HostVoting from "@/components/host/HostVoting";
 import HostResults from "@/components/host/HostResults";
 import HostGameOver from "@/components/host/HostGameOver";
+import ScoreBoard from "@/components/ui/ScoreBoard";
 
 function HostPageInner({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params);
@@ -109,6 +110,11 @@ function HostPageInner({ params }: { params: Promise<{ roomId: string }> }) {
     }
   })();
 
+  const showScoreStrip =
+    state.phase !== "lobby" &&
+    state.phase !== "results" &&
+    state.phase !== "game_over";
+
   return (
     <>
       {error && (
@@ -117,6 +123,11 @@ function HostPageInner({ params }: { params: Promise<{ roomId: string }> }) {
         </div>
       )}
       {phaseComponent}
+      {showScoreStrip && (
+        <div className="fixed bottom-0 left-0 right-0 bg-neutral-900/80 backdrop-blur-sm border-t border-neutral-800 py-2 px-4 z-40">
+          <ScoreBoard players={state.players} compact />
+        </div>
+      )}
     </>
   );
 }

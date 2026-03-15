@@ -52,6 +52,7 @@ function sanitizeState(state: GameState): GameState {
     copy.currentRound.aiAssistedPlayer = null;
     copy.currentRound.aiArgument = null;
     copy.currentRound.aiGuesses = {};
+    copy.currentRound.isAIAssistedRound = false;
     if (copy.phase === "debate") {
       if (copy.currentRound.argumentA) {
         copy.currentRound.argumentA = "__submitted__";
@@ -59,6 +60,18 @@ function sanitizeState(state: GameState): GameState {
       if (copy.currentRound.argumentB) {
         copy.currentRound.argumentB = "__submitted__";
       }
+    }
+  }
+  return copy;
+}
+
+function cleanupGhostPlayers(state: GameState): GameState {
+  const copy = JSON.parse(JSON.stringify(state)) as GameState;
+  for (const [id, p] of Object.entries(copy.players)) {
+    if (!p.connected) {
+      delete copy.players[id];
+    } else {
+      p.score = 0;
     }
   }
   return copy;
@@ -322,5 +335,142 @@ describe("state sanitization", () => {
     sanitizeState(state);
     expect(state.currentRound!.aiAssistedPlayer).toBe("p1");
     expect(state.currentRound!.aiArgument).toBe("secret");
+  });
+
+  it("hides isAIAssistedRound during non-results phases", () => {
+    const phases: GameState["phase"][] = ["round_start", "debate", "voting"];
+    for (const phase of phases) {
+      const state: GameState = {
+        roomId: "TEST",
+        phase,
+        players: {},
+        currentRound: makeRound({
+          isAIAssistedRound: true,
+          aiAssistedPlayer: "p1",
+          aiArgument: "secret argument",
+        }),
+        roundHistory: [],
+        totalRounds: 5,
+        config: {
+          maxPlayers: 8,
+          totalRounds: 5,
+          debateTimeSec: 60,
+          voteTimeSec: 20,
+          resultsTimeSec: 8,
+          aiAssistedRoundChance: 0.4,
+        },
+      };
+
+      const sanitized = sanitizeState(state);
+      expect(sanitized.currentRound!.isAIAssistedRound).toBe(false);
+    }
+  });
+
+  it("reveals isAIAssistedRound during results and game_over", () => {
+    for (const phase of ["results", "game_over"] as GameState["phase"][]) {
+      const state: GameState = {
+        roomId: "TEST",
+        phase,
+        players: {},
+        currentRound: makeRound({
+          isAIAssistedRound: true,
+          aiAssistedPlayer: "p1",
+        }),
+        roundHistory: [],
+        totalRounds: 5,
+        config: {
+          maxPlayers: 8,
+          totalRounds: 5,
+          debateTimeSec: 60,
+          voteTimeSec: 20,
+          resultsTimeSec: 8,
+          aiAssistedRoundChance: 0.4,
+        },
+      };
+
+      const sanitized = sanitizeState(state);
+      expect(sanitized.currentRound!.isAIAssistedRound).toBe(true);
+    }
+  });
+});
+
+describe("ghost player cleanup", () => {
+  it("removes disconnected players on play-again", () => {
+    const state: GameState = {
+      roomId: "TEST",
+      phase: "lobby",
+      players: {
+        p1: makePlayer("p1", "Alice", 500),
+        p2: { ...makePlayer("p2", "Bob", 300), connected: false },
+        p3: makePlayer("p3", "Charlie", 100),
+      },
+      currentRound: null,
+      roundHistory: [],
+      totalRounds: 5,
+      config: {
+        maxPlayers: 8,
+        totalRounds: 5,
+        debateTimeSec: 60,
+        voteTimeSec: 20,
+        resultsTimeSec: 8,
+        aiAssistedRoundChance: 0.4,
+      },
+    };
+
+    const cleaned = cleanupGhostPlayers(state);
+    expect(Object.keys(cleaned.players)).toEqual(["p1", "p3"]);
+    expect(cleaned.players.p2).toBeUndefined();
+  });
+
+  it("resets scores for connected players on cleanup", () => {
+    const state: GameState = {
+      roomId: "TEST",
+      phase: "lobby",
+      players: {
+        p1: makePlayer("p1", "Alice", 500),
+        p3: makePlayer("p3", "Charlie", 100),
+      },
+      currentRound: null,
+      roundHistory: [],
+      totalRounds: 5,
+      config: {
+        maxPlayers: 8,
+        totalRounds: 5,
+        debateTimeSec: 60,
+        voteTimeSec: 20,
+        resultsTimeSec: 8,
+        aiAssistedRoundChance: 0.4,
+      },
+    };
+
+    const cleaned = cleanupGhostPlayers(state);
+    expect(cleaned.players.p1.score).toBe(0);
+    expect(cleaned.players.p3.score).toBe(0);
+  });
+
+  it("does not mutate original state", () => {
+    const state: GameState = {
+      roomId: "TEST",
+      phase: "lobby",
+      players: {
+        p1: makePlayer("p1", "Alice", 500),
+        p2: { ...makePlayer("p2", "Bob", 300), connected: false },
+      },
+      currentRound: null,
+      roundHistory: [],
+      totalRounds: 5,
+      config: {
+        maxPlayers: 8,
+        totalRounds: 5,
+        debateTimeSec: 60,
+        voteTimeSec: 20,
+        resultsTimeSec: 8,
+        aiAssistedRoundChance: 0.4,
+      },
+    };
+
+    cleanupGhostPlayers(state);
+    expect(state.players.p2).toBeDefined();
+    expect(state.players.p1.score).toBe(500);
   });
 });

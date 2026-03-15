@@ -31,7 +31,7 @@
 - [x] Add debater selection history tracking — avoid repeating same pair across rounds
 - [ ] Add "round_start" countdown animation (3-2-1 style reveal)
 - [ ] Add score change animations on results screen (+100, +50, +150 fly-in)
-- [ ] Add persistent scoreboard strip visible during debate/voting phases on host
+- [x] Add persistent scoreboard strip visible during debate/voting phases on host
 - [ ] Add sound-free visual "ding" effect when timer hits 10s
 - [ ] Show "X/Y votes in" progress on host voting screen
 
@@ -51,7 +51,7 @@
 
 ## Backlog — Testing
 - [ ] Add component render tests for key components
-- [ ] Add test for ghost player cleanup on play-again
-- [ ] Add test for isAIAssistedRound sanitization
-- [ ] Add test for tie-break scoring (all voters get bonus)
+- [x] Add test for ghost player cleanup on play-again
+- [x] Add test for isAIAssistedRound sanitization
+- [x] Add test for tie-break scoring (all voters get bonus) — already existed
 - [ ] E2E test: simulate full 5-round game via WebSocket messages
