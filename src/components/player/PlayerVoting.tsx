@@ -62,14 +62,16 @@ export default function PlayerVoting({ state, send, playerId, role }: PlayerVoti
               <button
                 onClick={() => handleAIGuess(round.debaterA)}
                 className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white font-bold
-                           py-4 rounded-2xl text-lg transition-colors"
+                           py-4 rounded-2xl text-lg transition-colors
+                           focus-visible:ring-2 focus-visible:ring-orange-500"
               >
                 A
               </button>
               <button
                 onClick={() => handleAIGuess(round.debaterB)}
                 className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white font-bold
-                           py-4 rounded-2xl text-lg transition-colors"
+                           py-4 rounded-2xl text-lg transition-colors
+                           focus-visible:ring-2 focus-visible:ring-orange-500"
               >
                 B
               </button>
@@ -121,14 +123,16 @@ export default function PlayerVoting({ state, send, playerId, role }: PlayerVoti
         <button
           onClick={() => handleVote(round.debaterA)}
           className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold
-                     py-4 rounded-2xl text-xl transition-colors min-h-[60px]"
+                     py-4 rounded-2xl text-xl transition-colors min-h-[60px]
+                     focus-visible:ring-2 focus-visible:ring-orange-500"
         >
           Vote A
         </button>
         <button
           onClick={() => handleVote(round.debaterB)}
           className="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold
-                     py-4 rounded-2xl text-xl transition-colors min-h-[60px]"
+                     py-4 rounded-2xl text-xl transition-colors min-h-[60px]
+                     focus-visible:ring-2 focus-visible:ring-orange-500"
         >
           Vote B
         </button>

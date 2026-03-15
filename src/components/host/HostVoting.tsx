@@ -22,6 +22,9 @@ export default function HostVoting({ state, send, playerId, role }: HostVotingPr
   const isAIRound = role?.isAIAssistedRound ?? round.isAIAssistedRound;
 
   const totalVotes = Object.keys(round.votes).length;
+  const eligibleCount = Object.values(state.players).filter(
+    (p) => p.connected && p.id !== round.debaterA && p.id !== round.debaterB
+  ).length;
   const votesForA = Object.values(round.votes).filter(
     (v) => v === round.debaterA
   ).length;
@@ -90,14 +93,16 @@ export default function HostVoting({ state, send, playerId, role }: HostVotingPr
           <button
             onClick={() => handleVote(round.debaterA)}
             className="bg-green-600 hover:bg-green-500 text-white font-bold
-                       py-3 px-8 rounded-2xl text-lg transition-colors"
+                       py-3 px-8 rounded-2xl text-lg transition-colors
+                       focus-visible:ring-2 focus-visible:ring-orange-500"
           >
             Vote A
           </button>
           <button
             onClick={() => handleVote(round.debaterB)}
             className="bg-red-600 hover:bg-red-500 text-white font-bold
-                       py-3 px-8 rounded-2xl text-lg transition-colors"
+                       py-3 px-8 rounded-2xl text-lg transition-colors
+                       focus-visible:ring-2 focus-visible:ring-orange-500"
           >
             Vote B
           </button>
@@ -114,14 +119,16 @@ export default function HostVoting({ state, send, playerId, role }: HostVotingPr
             <button
               onClick={() => handleAIGuess(round.debaterA)}
               className="bg-neutral-800 hover:bg-neutral-700 text-white font-bold
-                         py-3 px-8 rounded-2xl text-lg transition-colors"
+                         py-3 px-8 rounded-2xl text-lg transition-colors
+                         focus-visible:ring-2 focus-visible:ring-orange-500"
             >
               A
             </button>
             <button
               onClick={() => handleAIGuess(round.debaterB)}
               className="bg-neutral-800 hover:bg-neutral-700 text-white font-bold
-                         py-3 px-8 rounded-2xl text-lg transition-colors"
+                         py-3 px-8 rounded-2xl text-lg transition-colors
+                         focus-visible:ring-2 focus-visible:ring-orange-500"
             >
               B
             </button>
@@ -133,9 +140,19 @@ export default function HostVoting({ state, send, playerId, role }: HostVotingPr
         <p className="text-green-400 font-bold">Vote submitted &#10003;</p>
       )}
 
-      <p className="text-neutral-500 text-sm">
-        {totalVotes} vote{totalVotes !== 1 ? "s" : ""} cast
-      </p>
+      <div className="flex flex-col items-center gap-2">
+        <p className="text-neutral-500 text-sm">
+          {totalVotes} of {eligibleCount} votes in
+        </p>
+        {eligibleCount > 0 && (
+          <div className="w-48 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-orange-500 rounded-full transition-all duration-300"
+              style={{ width: `${(totalVotes / eligibleCount) * 100}%` }}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

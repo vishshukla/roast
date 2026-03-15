@@ -33,7 +33,7 @@
 - [x] Add score change animations on results screen (+100, +50, +150 fly-in)
 - [x] Add persistent scoreboard strip visible during debate/voting phases on host
 - [ ] Add sound-free visual "ding" effect when timer hits 10s
-- [ ] Show "X/Y votes in" progress on host voting screen
+- [x] Show "X/Y votes in" progress on host voting screen
 
 ## Backlog — Robustness
 - [ ] Handle player reconnection mid-game (match by name or token)
@@ -43,7 +43,7 @@
 - [ ] Handle edge case: all non-debaters disconnect during voting (vacuous allVoted)
 
 ## Backlog — UX Improvements
-- [ ] Add focus-visible:ring styles to all interactive buttons
+- [x] Add focus-visible:ring styles to all interactive buttons
 - [ ] Memoize confetti random values to prevent re-render shuffling
 - [ ] Add loading spinner between join and server confirmation
 - [ ] Show recovery UI when join is rejected (reset joined state on error)

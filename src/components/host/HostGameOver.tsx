@@ -60,7 +60,8 @@ export default function HostGameOver({ state, send, playerId }: HostGameOverProp
         <button
           onClick={() => send({ type: "play_again" })}
           className="bg-orange-500 hover:bg-orange-400 text-white font-bold
-                     py-4 px-12 rounded-2xl text-xl transition-colors z-10"
+                     py-4 px-12 rounded-2xl text-xl transition-colors z-10
+                     focus-visible:ring-2 focus-visible:ring-orange-500"
         >
           Play Again
         </button>

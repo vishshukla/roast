@@ -25,14 +25,16 @@ export default function Home() {
           <button
             onClick={handleCreate}
             className="bg-orange-500 hover:bg-orange-400 text-white font-bold
-                       py-4 px-8 rounded-2xl text-xl transition-colors"
+                       py-4 px-8 rounded-2xl text-xl transition-colors
+                       focus-visible:ring-2 focus-visible:ring-orange-500"
           >
             Create Room
           </button>
           <button
             onClick={() => setShowJoin(true)}
             className="bg-neutral-800 hover:bg-neutral-700 text-white font-bold
-                       py-4 px-8 rounded-2xl text-xl transition-colors"
+                       py-4 px-8 rounded-2xl text-xl transition-colors
+                       focus-visible:ring-2 focus-visible:ring-orange-500"
           >
             Join Room
           </button>

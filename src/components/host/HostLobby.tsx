@@ -56,7 +56,8 @@ export default function HostLobby({ state, send, playerId }: HostLobbyProps) {
           disabled={!canStart}
           className="bg-orange-500 hover:bg-orange-400 disabled:bg-neutral-700
                      disabled:text-neutral-500 text-white font-bold
-                     py-4 px-12 rounded-2xl text-xl transition-colors"
+                     py-4 px-12 rounded-2xl text-xl transition-colors
+                     focus-visible:ring-2 focus-visible:ring-orange-500"
         >
           {canStart
             ? "Start Game"
