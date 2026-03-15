@@ -1,16 +1,25 @@
 "use client";
-import type { GameState } from "@/lib/types";
+import { useState } from "react";
+import type { GameState, PlayerRole } from "@/lib/types";
 import Timer from "@/components/ui/Timer";
 
 interface HostVotingProps {
   state: GameState;
   send: (msg: object) => void;
   playerId: string;
+  role: PlayerRole | null;
 }
 
-export default function HostVoting({ state }: HostVotingProps) {
+export default function HostVoting({ state, send, playerId, role }: HostVotingProps) {
   const round = state.currentRound;
+  const [voted, setVoted] = useState(false);
+  const [guessed, setGuessed] = useState(false);
+
   if (!round) return null;
+
+  const isDebater =
+    playerId === round.debaterA || playerId === round.debaterB;
+  const isAIRound = role?.isAIAssistedRound ?? round.isAIAssistedRound;
 
   const totalVotes = Object.keys(round.votes).length;
   const votesForA = Object.values(round.votes).filter(
@@ -19,6 +28,16 @@ export default function HostVoting({ state }: HostVotingProps) {
   const votesForB = Object.values(round.votes).filter(
     (v) => v === round.debaterB
   ).length;
+
+  const handleVote = (votedFor: string) => {
+    send({ type: "submit_vote", votedFor });
+    setVoted(true);
+  };
+
+  const handleAIGuess = (guessedPlayer: string) => {
+    send({ type: "submit_ai_guess", guessedPlayer });
+    setGuessed(true);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 gap-8">
@@ -29,7 +48,7 @@ export default function HostVoting({ state }: HostVotingProps) {
         <p className="text-neutral-400">Vote for the best argument!</p>
       </div>
 
-      {round.isAIAssistedRound && (
+      {isAIRound && (
         <p className="text-amber-400 text-sm">
           &#129302; One of these arguments had AI help...
         </p>
@@ -64,6 +83,55 @@ export default function HostVoting({ state }: HostVotingProps) {
       </div>
 
       <Timer durationSec={state.config.voteTimeSec} />
+
+      {/* Host can vote if not a debater */}
+      {!isDebater && !voted && (
+        <div className="flex gap-4">
+          <button
+            onClick={() => handleVote(round.debaterA)}
+            className="bg-green-600 hover:bg-green-500 text-white font-bold
+                       py-3 px-8 rounded-2xl text-lg transition-colors"
+          >
+            Vote A
+          </button>
+          <button
+            onClick={() => handleVote(round.debaterB)}
+            className="bg-red-600 hover:bg-red-500 text-white font-bold
+                       py-3 px-8 rounded-2xl text-lg transition-colors"
+          >
+            Vote B
+          </button>
+        </div>
+      )}
+
+      {!isDebater && voted && !guessed && isAIRound && (
+        <div className="text-center">
+          <p className="text-green-400 font-bold mb-3">Vote submitted &#10003;</p>
+          <p className="text-amber-400 text-sm mb-3">
+            &#129302; Which debater had AI help?
+          </p>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => handleAIGuess(round.debaterA)}
+              className="bg-neutral-800 hover:bg-neutral-700 text-white font-bold
+                         py-3 px-8 rounded-2xl text-lg transition-colors"
+            >
+              A
+            </button>
+            <button
+              onClick={() => handleAIGuess(round.debaterB)}
+              className="bg-neutral-800 hover:bg-neutral-700 text-white font-bold
+                         py-3 px-8 rounded-2xl text-lg transition-colors"
+            >
+              B
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!isDebater && voted && (guessed || !isAIRound) && (
+        <p className="text-green-400 font-bold">Vote submitted &#10003;</p>
+      )}
 
       <p className="text-neutral-500 text-sm">
         {totalVotes} vote{totalVotes !== 1 ? "s" : ""} cast

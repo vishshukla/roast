@@ -1,5 +1,5 @@
 "use client";
-import type { GameState } from "@/lib/types";
+import type { GameState, PlayerRole } from "@/lib/types";
 import { MIN_PLAYERS } from "@/lib/constants";
 import RoomCode from "@/components/ui/RoomCode";
 import PlayerAvatar from "@/components/ui/PlayerAvatar";
@@ -8,6 +8,7 @@ interface HostLobbyProps {
   state: GameState;
   send: (msg: object) => void;
   playerId: string;
+  role: PlayerRole | null;
 }
 
 export default function HostLobby({ state, send, playerId }: HostLobbyProps) {

@@ -1,5 +1,5 @@
 "use client";
-import type { GameState } from "@/lib/types";
+import type { GameState, PlayerRole } from "@/lib/types";
 import { getPlayerName } from "@/lib/utils";
 import ScoreBoard from "@/components/ui/ScoreBoard";
 
@@ -7,6 +7,7 @@ interface HostResultsProps {
   state: GameState;
   send: (msg: object) => void;
   playerId: string;
+  role: PlayerRole | null;
 }
 
 export default function HostResults({ state }: HostResultsProps) {
