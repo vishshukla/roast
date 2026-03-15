@@ -1,0 +1,5 @@
+{
+  "name": "roast",
+  "main": "src/party/room.ts",
+  "compatibilityDate": "2024-09-01"
+}

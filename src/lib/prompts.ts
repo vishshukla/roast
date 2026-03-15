@@ -1,0 +1,17 @@
+export const FALLBACK_PROMPTS = [
+  "Cereal is a soup.",
+  "Hot dogs are sandwiches.",
+  "The best superpower would be the ability to refill anything.",
+  "Sleeping with socks on is superior.",
+  "The toilet paper roll should go UNDER, not over.",
+  "Water is the best drink ever invented.",
+  "Breakfast for dinner is better than dinner for dinner.",
+  "Dogs are just wolves that sold out.",
+  "Airports are the most interesting places on Earth.",
+  "The snooze button has done more harm than good for humanity.",
+  "Reclining your seat on an airplane should be illegal.",
+  "Movie theaters will be extinct by 2035.",
+  "Reply All should be removed from email.",
+  "The Oxford comma is non-negotiable.",
+  "Adulthood is just Googling how to do things.",
+];
