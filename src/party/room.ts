@@ -1,5 +1,6 @@
 import type { Party, PartyKitServer, Connection } from "partykit/server";
 import { GAME_CONFIG, PLAYER_COLORS, MIN_PLAYERS } from "../lib/constants";
+import { FALLBACK_PROMPTS } from "../lib/prompts";
 import type {
   GameState, Player, RoundData,
   ClientMessage, ServerMessage, PlayerRole
@@ -126,8 +127,24 @@ export default class RoastRoom implements PartyKitServer {
 
     const players = this.getConnectedPlayers();
     const shuffled = this.shuffle([...players]);
-    const debaterA = shuffled[0];
-    const debaterB = shuffled[1];
+    let debaterA = shuffled[0];
+    let debaterB = shuffled[1];
+
+    // Avoid repeating the same debater pair if possible
+    if (this.wasPairUsed(debaterA.id, debaterB.id) && shuffled.length > 2) {
+      // Try swapping debaterB with the next player in the shuffle
+      debaterB = shuffled[2];
+      if (this.wasPairUsed(debaterA.id, debaterB.id)) {
+        // Try swapping debaterA too
+        debaterA = shuffled[1];
+        debaterB = shuffled[2];
+        if (this.wasPairUsed(debaterA.id, debaterB.id)) {
+          // All attempted pairs used — fall back to original pick
+          debaterA = shuffled[0];
+          debaterB = shuffled[1];
+        }
+      }
+    }
 
     const isAIAssisted =
       Math.random() < this.state.config.aiAssistedRoundChance;
@@ -337,17 +354,7 @@ export default class RoastRoom implements PartyKitServer {
       const data = await res.json();
       return data.text || "Pineapple belongs on pizza.";
     } catch {
-      const fallbacks = [
-        "Cereal is a soup.",
-        "Hot dogs are sandwiches.",
-        "The best superpower is invisibility, not flight.",
-        "Cats are better than dogs.",
-        "Morning people are more productive than night owls.",
-        "Social media has done more good than harm.",
-        "AI will create more jobs than it destroys.",
-        "The movie is always worse than the book.",
-      ];
-      return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+      return FALLBACK_PROMPTS[Math.floor(Math.random() * FALLBACK_PROMPTS.length)];
     }
   }
 
@@ -373,6 +380,14 @@ export default class RoastRoom implements PartyKitServer {
   }
 
   // --- Helpers ---
+
+  wasPairUsed(idA: string, idB: string): boolean {
+    return this.state.roundHistory.some(
+      (r) =>
+        (r.debaterA === idA && r.debaterB === idB) ||
+        (r.debaterA === idB && r.debaterB === idA)
+    );
+  }
 
   getConnectedPlayers(): Player[] {
     return Object.values(this.state.players).filter((p) => p.connected);

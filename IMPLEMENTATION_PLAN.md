@@ -28,7 +28,7 @@
 ## In Progress
 
 ## Backlog — Game Flow & Polish
-- [ ] Add debater selection history tracking — avoid repeating same pair across rounds
+- [x] Add debater selection history tracking — avoid repeating same pair across rounds
 - [ ] Add "round_start" countdown animation (3-2-1 style reveal)
 - [ ] Add score change animations on results screen (+100, +50, +150 fly-in)
 - [ ] Add persistent scoreboard strip visible during debate/voting phases on host
@@ -39,7 +39,7 @@
 - [ ] Handle player reconnection mid-game (match by name or token)
 - [ ] Add input validation on server for malformed messages (runtime type checking)
 - [ ] Add rate limiting / origin check on API route for production
-- [ ] Import and use FALLBACK_PROMPTS from prompts.ts in room.ts instead of duplicates
+- [x] Import and use FALLBACK_PROMPTS from prompts.ts in room.ts instead of duplicates
 - [ ] Handle edge case: all non-debaters disconnect during voting (vacuous allVoted)
 
 ## Backlog — UX Improvements
