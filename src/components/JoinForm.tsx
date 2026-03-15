@@ -23,6 +23,7 @@ export default function JoinForm({ onBack }: { onBack: () => void }) {
       <input
         type="text"
         placeholder="Room Code"
+        aria-label="Room Code"
         maxLength={4}
         value={code}
         onChange={(e) => setCode(e.target.value.toUpperCase())}
@@ -33,9 +34,11 @@ export default function JoinForm({ onBack }: { onBack: () => void }) {
       <input
         type="text"
         placeholder="Your Name"
+        aria-label="Your Name"
         maxLength={MAX_NAME_LENGTH}
         value={name}
         onChange={(e) => setName(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && code.length === 4 && name.trim() && handleJoin()}
         className="bg-neutral-800 text-white text-center text-xl
                    py-4 px-6 rounded-2xl outline-none
                    focus:ring-2 focus:ring-orange-500"
@@ -51,7 +54,7 @@ export default function JoinForm({ onBack }: { onBack: () => void }) {
       </button>
       <button
         onClick={onBack}
-        className="text-neutral-400 hover:text-white transition-colors"
+        className="text-neutral-400 hover:text-white transition-colors py-3 min-h-[48px]"
       >
         &larr; Back
       </button>

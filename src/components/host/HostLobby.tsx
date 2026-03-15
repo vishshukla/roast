@@ -33,9 +33,12 @@ export default function HostLobby({ state, send, playerId }: HostLobbyProps) {
           {players.map((p) => (
             <div
               key={p.id}
-              className={`animate-fade-in ${!p.connected ? "opacity-40" : ""}`}
+              className={`animate-fade-in flex flex-col items-center ${!p.connected ? "opacity-40" : ""}`}
             >
               <PlayerAvatar name={p.name} color={p.color} size="lg" />
+              {!p.connected && (
+                <span className="text-red-400 text-xs mt-1">disconnected</span>
+              )}
             </div>
           ))}
         </div>

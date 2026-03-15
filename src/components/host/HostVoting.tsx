@@ -82,7 +82,7 @@ export default function HostVoting({ state, send, playerId, role }: HostVotingPr
         </div>
       </div>
 
-      <Timer durationSec={state.config.voteTimeSec} />
+      <Timer key={`vote-${round.roundNumber}`} durationSec={state.config.voteTimeSec} />
 
       {/* Host can vote if not a debater */}
       {!isDebater && !voted && (

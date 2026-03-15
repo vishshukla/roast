@@ -24,11 +24,12 @@ function calculateScores(
   scores[round.debaterA] = (scores[round.debaterA] || 0) + votesForA * 100;
   scores[round.debaterB] = (scores[round.debaterB] || 0) + votesForB * 100;
 
-  // Majority bonus
+  // Majority bonus (ties award all voters)
+  const isTie = votesForA === votesForB;
   const majorityChoice =
-    votesForA >= votesForB ? round.debaterA : round.debaterB;
+    votesForA > votesForB ? round.debaterA : round.debaterB;
   for (const [voterId, votedFor] of Object.entries(round.votes)) {
-    if (votedFor === majorityChoice) {
+    if (isTie || votedFor === majorityChoice) {
       scores[voterId] = (scores[voterId] || 0) + 50;
     }
   }
@@ -117,6 +118,22 @@ describe("scoring logic", () => {
     expect(scores.p3).toBe(50); // voted with majority
     expect(scores.p4).toBe(50); // voted with majority
     expect(scores.p5).toBe(0);  // voted against majority
+  });
+
+  it("awards 50 points to ALL voters on a tie", () => {
+    const players = {
+      p1: makePlayer("p1", "Alice"),
+      p2: makePlayer("p2", "Bob"),
+      p3: makePlayer("p3", "Charlie"),
+      p4: makePlayer("p4", "Dave"),
+    };
+    const round = makeRound({
+      votes: { p3: "p1", p4: "p2" }, // 1-1 tie
+    });
+
+    const scores = calculateScores(players, round);
+    expect(scores.p3).toBe(50); // tie = everyone gets majority bonus
+    expect(scores.p4).toBe(50); // tie = everyone gets majority bonus
   });
 
   it("awards 150 points for correct AI guess", () => {

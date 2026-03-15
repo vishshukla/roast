@@ -19,7 +19,7 @@ export default function HostGameOver({ state, send, playerId }: HostGameOverProp
     <div className="flex flex-col items-center justify-center min-h-screen p-6 gap-8 relative overflow-hidden">
       {/* CSS Confetti */}
       <div className="confetti-container" aria-hidden="true">
-        {Array.from({ length: 30 }).map((_, i) => (
+        {Array.from({ length: 20 }).map((_, i) => (
           <div
             key={i}
             className="confetti-piece"

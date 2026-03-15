@@ -15,6 +15,7 @@ export default function HostPage({ params }: { params: Promise<{ roomId: string 
   const [role, setRole] = useState<PlayerRole | null>(null);
   const [joined, setJoined] = useState(false);
   const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const socket = usePartySocket({
     host: process.env.NEXT_PUBLIC_PARTYKIT_HOST!,
@@ -25,6 +26,9 @@ export default function HostPage({ params }: { params: Promise<{ roomId: string 
         setState(msg.state);
       } else if (msg.type === "player_role") {
         setRole(msg.role);
+      } else if (msg.type === "error") {
+        setError(msg.message);
+        setTimeout(() => setError(null), 4000);
       }
     },
   });
@@ -83,19 +87,32 @@ export default function HostPage({ params }: { params: Promise<{ roomId: string 
 
   const props = { state, send, playerId: socket?.id || "", role };
 
-  switch (state.phase) {
-    case "lobby":
-      return <HostLobby {...props} />;
-    case "round_start":
-    case "debate":
-      return <HostDebate {...props} />;
-    case "voting":
-      return <HostVoting {...props} />;
-    case "results":
-      return <HostResults {...props} />;
-    case "game_over":
-      return <HostGameOver {...props} />;
-    default:
-      return <HostLobby {...props} />;
-  }
+  const phaseComponent = (() => {
+    switch (state.phase) {
+      case "lobby":
+        return <HostLobby {...props} />;
+      case "round_start":
+      case "debate":
+        return <HostDebate key={state.currentRound?.roundNumber} {...props} />;
+      case "voting":
+        return <HostVoting key={`vote-${state.currentRound?.roundNumber}`} {...props} />;
+      case "results":
+        return <HostResults {...props} />;
+      case "game_over":
+        return <HostGameOver {...props} />;
+      default:
+        return <HostLobby {...props} />;
+    }
+  })();
+
+  return (
+    <>
+      {error && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-500/90 text-white px-6 py-3 rounded-2xl font-bold z-50 animate-fade-in">
+          {error}
+        </div>
+      )}
+      {phaseComponent}
+    </>
+  );
 }

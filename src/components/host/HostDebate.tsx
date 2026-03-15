@@ -106,7 +106,7 @@ export default function HostDebate({ state, send, playerId, role }: HostDebatePr
             </div>
           </div>
 
-          <Timer durationSec={state.config.debateTimeSec} />
+          <Timer key={`debate-${round.roundNumber}`} durationSec={state.config.debateTimeSec} />
 
           {/* Host is a debater — show input controls */}
           {isDebater && !submitted && (
@@ -124,7 +124,7 @@ export default function HostDebate({ state, send, playerId, role }: HostDebatePr
                   <button
                     onClick={handleUseAI}
                     className="bg-amber-500 hover:bg-amber-400 text-black font-bold
-                               py-2 px-4 rounded-xl text-sm transition-colors w-full"
+                               py-3 px-4 rounded-xl text-sm transition-colors w-full"
                   >
                     Use AI Argument
                   </button>

@@ -236,8 +236,13 @@ export default class RoastRoom implements PartyKitServer {
   }
 
   handleSubmitAIGuess(conn: Connection, guessedPlayer: string) {
-    if (!this.state.currentRound) return;
-    this.state.currentRound.aiGuesses[conn.id] = guessedPlayer;
+    if (this.state.phase !== "voting" || !this.state.currentRound) return;
+    const round = this.state.currentRound;
+    // Debaters can't guess
+    if (conn.id === round.debaterA || conn.id === round.debaterB) return;
+    // Must guess a valid debater
+    if (guessedPlayer !== round.debaterA && guessedPlayer !== round.debaterB) return;
+    round.aiGuesses[conn.id] = guessedPlayer;
   }
 
   endVoting() {
@@ -259,11 +264,13 @@ export default class RoastRoom implements PartyKitServer {
       this.state.players[round.debaterB].score += votesForB * 100;
     }
 
-    const majorityChoice =
-      votesForA >= votesForB ? round.debaterA : round.debaterB;
+    const isTie = votesForA === votesForB;
+    const majorityChoice = votesForA > votesForB ? round.debaterA : round.debaterB;
     for (const [voterId, votedFor] of Object.entries(round.votes)) {
-      if (votedFor === majorityChoice && this.state.players[voterId]) {
-        this.state.players[voterId].score += 50;
+      if (isTie || votedFor === majorityChoice) {
+        if (this.state.players[voterId]) {
+          this.state.players[voterId].score += 50;
+        }
       }
     }
 
@@ -295,6 +302,11 @@ export default class RoastRoom implements PartyKitServer {
     const player = this.state.players[conn.id];
     if (!player?.isHost) return;
     if (this.state.phase !== "game_over") return;
+
+    this.clearTimer("round_start");
+    this.clearTimer("debate");
+    this.clearTimer("voting");
+    this.clearTimer("results");
 
     this.state.phase = "lobby";
     this.state.currentRound = null;

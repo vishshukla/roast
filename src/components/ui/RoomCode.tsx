@@ -4,7 +4,7 @@ interface RoomCodeProps {
 }
 
 export default function RoomCode({ code, size = "lg" }: RoomCodeProps) {
-  const textSize = size === "lg" ? "text-[12rem]" : "text-4xl";
+  const textSize = size === "lg" ? "text-7xl sm:text-9xl md:text-[12rem]" : "text-4xl";
 
   return (
     <div className="flex flex-col items-center">

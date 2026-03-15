@@ -40,7 +40,7 @@ export default function PlayerVoting({ state, send, playerId, role }: PlayerVoti
         <p className="text-neutral-400">
           Voting in progress... You&apos;re a debater this round.
         </p>
-        <Timer durationSec={state.config.voteTimeSec} />
+        <Timer key={`vote-${round.roundNumber}`} durationSec={state.config.voteTimeSec} />
       </div>
     );
   }
@@ -134,7 +134,7 @@ export default function PlayerVoting({ state, send, playerId, role }: PlayerVoti
         </button>
       </div>
 
-      <Timer durationSec={state.config.voteTimeSec} />
+      <Timer key={`vote-${round.roundNumber}`} durationSec={state.config.voteTimeSec} />
     </div>
   );
 }

@@ -25,9 +25,9 @@ export default function PlayerResults({ state, playerId }: PlayerResultsProps) {
   ).length;
 
   const myVote = round.votes[playerId];
-  const majorityChoice =
-    votesForA >= votesForB ? round.debaterA : round.debaterB;
-  const votedWithMajority = myVote === majorityChoice;
+  const isTie = votesForA === votesForB;
+  const majorityChoice = votesForA > votesForB ? round.debaterA : round.debaterB;
+  const votedWithMajority = isTie || myVote === majorityChoice;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 gap-6 max-w-md mx-auto">

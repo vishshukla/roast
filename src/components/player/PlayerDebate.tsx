@@ -119,7 +119,7 @@ export default function PlayerDebate({ state, send, role }: PlayerDebateProps) {
           <button
             onClick={handleUseAI}
             className="bg-amber-500 hover:bg-amber-400 text-black font-bold
-                       py-2 px-4 rounded-xl text-sm transition-colors w-full"
+                       py-3 px-4 rounded-xl text-sm transition-colors w-full"
           >
             Use AI Argument
           </button>
@@ -135,7 +135,7 @@ export default function PlayerDebate({ state, send, role }: PlayerDebateProps) {
       />
       <div className="flex justify-between w-full text-sm">
         <span className="text-neutral-500">{argument.length}/500</span>
-        <Timer durationSec={state.config.debateTimeSec} />
+        <Timer key={`debate-${round.roundNumber}`} durationSec={state.config.debateTimeSec} />
       </div>
 
       <button
