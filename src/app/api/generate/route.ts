@@ -18,10 +18,11 @@ export async function POST(request: Request) {
 }
 
 async function generatePrompt() {
-  const message = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 150,
-    system: `You generate spicy, debatable "hot take" prompts for a party game.
+  try {
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 150,
+      system: `You generate spicy, debatable "hot take" prompts for a party game.
 Rules:
 - One sentence, stated as a confident opinion (not a question)
 - Should be fun and debatable, NOT offensive, political, or harmful
@@ -29,24 +30,28 @@ Rules:
 - Vary between silly ("Cereal is a soup") and thought-provoking ("The 5-day work week will be obsolete by 2030")
 - NEVER repeat. Be creative and surprising.
 - Return ONLY the hot take text, nothing else. No quotes.`,
-    messages: [
-      {
-        role: "user",
-        content: "Generate one hot take prompt.",
-      },
-    ],
-  });
+      messages: [
+        {
+          role: "user",
+          content: "Generate one hot take prompt.",
+        },
+      ],
+    });
 
-  const text =
-    message.content[0].type === "text" ? message.content[0].text : "";
-  return NextResponse.json({ text: text.trim() });
+    const text =
+      message.content[0].type === "text" ? message.content[0].text : "";
+    return NextResponse.json({ text: text.trim() });
+  } catch (e) {
+    return NextResponse.json({ error: "Failed to generate prompt" }, { status: 500 });
+  }
 }
 
 async function generateArgument(prompt: string, side: string) {
-  const message = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 250,
-    system: `You are generating a debate argument for a party game.
+  try {
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 250,
+      system: `You are generating a debate argument for a party game.
 Rules:
 - Write a short, punchy argument (2-4 sentences, max 400 characters)
 - Sound like a real person at a party, NOT like a formal essay
@@ -54,15 +59,18 @@ Rules:
 - Use casual language, contractions, maybe light sarcasm
 - Don't be too polished — it should be believable as human-written
 - Return ONLY the argument text, nothing else.`,
-    messages: [
-      {
-        role: "user",
-        content: `The hot take is: "${prompt}"\n\nWrite an argument ${side} this take.`,
-      },
-    ],
-  });
+      messages: [
+        {
+          role: "user",
+          content: `The hot take is: "${prompt}"\n\nWrite an argument ${side} this take.`,
+        },
+      ],
+    });
 
-  const text =
-    message.content[0].type === "text" ? message.content[0].text : "";
-  return NextResponse.json({ text: text.trim() });
+    const text =
+      message.content[0].type === "text" ? message.content[0].text : "";
+    return NextResponse.json({ text: text.trim() });
+  } catch (e) {
+    return NextResponse.json({ error: "Failed to generate argument" }, { status: 500 });
+  }
 }

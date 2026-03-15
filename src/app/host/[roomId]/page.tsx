@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, use } from "react";
+import { Suspense, useState, useCallback, use } from "react";
 import usePartySocket from "partysocket/react";
 import type { GameState, ServerMessage, PlayerRole } from "@/lib/types";
 import { MAX_NAME_LENGTH } from "@/lib/constants";
@@ -9,7 +9,7 @@ import HostVoting from "@/components/host/HostVoting";
 import HostResults from "@/components/host/HostResults";
 import HostGameOver from "@/components/host/HostGameOver";
 
-export default function HostPage({ params }: { params: Promise<{ roomId: string }> }) {
+function HostPageInner({ params }: { params: Promise<{ roomId: string }> }) {
   const { roomId } = use(params);
   const [state, setState] = useState<GameState | null>(null);
   const [role, setRole] = useState<PlayerRole | null>(null);
@@ -24,6 +24,9 @@ export default function HostPage({ params }: { params: Promise<{ roomId: string 
       const msg: ServerMessage = JSON.parse(event.data);
       if (msg.type === "state_update") {
         setState(msg.state);
+        if (msg.state.phase === "lobby") {
+          setRole(null);
+        }
       } else if (msg.type === "player_role") {
         setRole(msg.role);
       } else if (msg.type === "error") {
@@ -55,6 +58,7 @@ export default function HostPage({ params }: { params: Promise<{ roomId: string 
         <input
           type="text"
           placeholder="Your Name"
+          aria-label="Your Name"
           maxLength={MAX_NAME_LENGTH}
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -114,5 +118,13 @@ export default function HostPage({ params }: { params: Promise<{ roomId: string 
       )}
       {phaseComponent}
     </>
+  );
+}
+
+export default function HostPage(props: { params: Promise<{ roomId: string }> }) {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><p className="text-neutral-400 text-xl">Loading...</p></div>}>
+      <HostPageInner {...props} />
+    </Suspense>
   );
 }

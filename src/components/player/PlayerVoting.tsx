@@ -103,7 +103,7 @@ export default function PlayerVoting({ state, send, playerId, role }: PlayerVoti
         <p className="text-green-400 font-bold text-sm uppercase tracking-wider mb-2">
           Argument A &mdash; FOR
         </p>
-        <p className="text-neutral-200 text-sm leading-relaxed">
+        <p className="text-neutral-200 text-sm leading-relaxed break-words">
           {round.argumentA}
         </p>
       </div>
@@ -112,7 +112,7 @@ export default function PlayerVoting({ state, send, playerId, role }: PlayerVoti
         <p className="text-red-400 font-bold text-sm uppercase tracking-wider mb-2">
           Argument B &mdash; AGAINST
         </p>
-        <p className="text-neutral-200 text-sm leading-relaxed">
+        <p className="text-neutral-200 text-sm leading-relaxed break-words">
           {round.argumentB}
         </p>
       </div>

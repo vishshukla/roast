@@ -59,7 +59,7 @@ export default function HostVoting({ state, send, playerId, role }: HostVotingPr
           <p className="text-green-400 font-bold text-sm uppercase tracking-wider mb-3">
             Argument A &mdash; FOR
           </p>
-          <p className="text-lg leading-relaxed">{round.argumentA}</p>
+          <p className="text-lg leading-relaxed break-words">{round.argumentA}</p>
           <div className="mt-4 text-center">
             <span className="text-2xl font-bold tabular-nums text-orange-500">
               {votesForA}
@@ -72,7 +72,7 @@ export default function HostVoting({ state, send, playerId, role }: HostVotingPr
           <p className="text-red-400 font-bold text-sm uppercase tracking-wider mb-3">
             Argument B &mdash; AGAINST
           </p>
-          <p className="text-lg leading-relaxed">{round.argumentB}</p>
+          <p className="text-lg leading-relaxed break-words">{round.argumentB}</p>
           <div className="mt-4 text-center">
             <span className="text-2xl font-bold tabular-nums text-orange-500">
               {votesForB}

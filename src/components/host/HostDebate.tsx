@@ -62,7 +62,7 @@ export default function HostDebate({ state, send, playerId, role }: HostDebatePr
 
       {!isRoundStart && (
         <>
-          <div className="flex gap-12 items-start">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-12 items-center justify-center">
             <div className="flex flex-col items-center gap-2">
               <span className="text-green-400 font-bold text-sm uppercase tracking-wider">
                 FOR

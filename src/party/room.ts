@@ -311,8 +311,13 @@ export default class RoastRoom implements PartyKitServer {
     this.state.phase = "lobby";
     this.state.currentRound = null;
     this.state.roundHistory = [];
-    for (const p of Object.values(this.state.players)) {
-      p.score = 0;
+    // Remove disconnected players, reset connected players' scores
+    for (const [id, p] of Object.entries(this.state.players)) {
+      if (!p.connected) {
+        delete this.state.players[id];
+      } else {
+        p.score = 0;
+      }
     }
     this.broadcast({ type: "state_update", state: this.sanitizeState() });
   }
@@ -406,6 +411,7 @@ export default class RoastRoom implements PartyKitServer {
       state.currentRound.aiAssistedPlayer = null;
       state.currentRound.aiArgument = null;
       state.currentRound.aiGuesses = {};
+      state.currentRound.isAIAssistedRound = false;
       if (state.phase === "debate") {
         if (state.currentRound.argumentA) {
           state.currentRound.argumentA = "__submitted__";

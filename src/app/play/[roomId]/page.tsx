@@ -26,6 +26,9 @@ function PlayPageInner({ params }: { params: Promise<{ roomId: string }> }) {
       const msg: ServerMessage = JSON.parse(event.data);
       if (msg.type === "state_update") {
         setState(msg.state);
+        if (msg.state.phase === "lobby") {
+          setRole(null);
+        }
       } else if (msg.type === "player_role") {
         setRole(msg.role);
       } else if (msg.type === "error") {
