@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { GameState, PlayerRole } from "@/lib/types";
 import { getPlayerName } from "@/lib/utils";
 import Timer from "@/components/ui/Timer";
@@ -15,6 +15,19 @@ export default function HostDebate({ state, send, playerId, role }: HostDebatePr
   const round = state.currentRound;
   const [argument, setArgument] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  // Countdown state for round_start phase (3 -> 2 -> 1)
+  const [countdown, setCountdown] = useState(3);
+
+  useEffect(() => {
+    if (state.phase !== "round_start") {
+      setCountdown(3);
+      return;
+    }
+    if (countdown <= 0) return;
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 600);
+    return () => clearTimeout(timer);
+  }, [state.phase, countdown, round?.roundNumber]);
 
   if (!round) return null;
 
@@ -124,7 +137,8 @@ export default function HostDebate({ state, send, playerId, role }: HostDebatePr
                   <button
                     onClick={handleUseAI}
                     className="bg-amber-500 hover:bg-amber-400 text-black font-bold
-                               py-3 px-4 rounded-xl text-sm transition-colors w-full"
+                               py-3 px-4 rounded-xl text-sm transition-colors w-full
+                               focus-visible:ring-2 focus-visible:ring-orange-500"
                   >
                     Use AI Argument
                   </button>
@@ -146,7 +160,8 @@ export default function HostDebate({ state, send, playerId, role }: HostDebatePr
                   disabled={!argument.trim() && !aiArgument}
                   className="bg-orange-500 hover:bg-orange-400 disabled:bg-neutral-700
                              disabled:text-neutral-500 text-white font-bold
-                             py-3 px-8 rounded-2xl text-lg transition-colors"
+                             py-3 px-8 rounded-2xl text-lg transition-colors
+                             focus-visible:ring-2 focus-visible:ring-orange-500"
                 >
                   Submit
                 </button>
@@ -167,9 +182,15 @@ export default function HostDebate({ state, send, playerId, role }: HostDebatePr
       )}
 
       {isRoundStart && (
-        <p className="text-neutral-400 text-lg animate-pulse">
-          Get ready...
-        </p>
+        <div className="flex flex-col items-center gap-4">
+          <p
+            key={countdown}
+            className="text-8xl font-black text-orange-500 animate-countdown-pop"
+          >
+            {countdown > 0 ? countdown : "GO!"}
+          </p>
+          <p className="text-neutral-400 text-lg">Get ready...</p>
+        </div>
       )}
     </div>
   );

@@ -29,8 +29,8 @@
 
 ## Backlog — Game Flow & Polish
 - [x] Add debater selection history tracking — avoid repeating same pair across rounds
-- [ ] Add "round_start" countdown animation (3-2-1 style reveal)
-- [ ] Add score change animations on results screen (+100, +50, +150 fly-in)
+- [x] Add "round_start" countdown animation (3-2-1 style reveal)
+- [x] Add score change animations on results screen (+100, +50, +150 fly-in)
 - [x] Add persistent scoreboard strip visible during debate/voting phases on host
 - [ ] Add sound-free visual "ding" effect when timer hits 10s
 - [ ] Show "X/Y votes in" progress on host voting screen

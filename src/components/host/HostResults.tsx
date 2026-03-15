@@ -10,6 +10,45 @@ interface HostResultsProps {
   role: PlayerRole | null;
 }
 
+/** Calculate points each player earned this round from the round data. */
+function calcRoundPoints(state: GameState): Record<string, number> {
+  const round = state.currentRound;
+  if (!round) return {};
+
+  const pts: Record<string, number> = {};
+
+  const votesForA = Object.values(round.votes).filter(
+    (v) => v === round.debaterA
+  ).length;
+  const votesForB = Object.values(round.votes).filter(
+    (v) => v === round.debaterB
+  ).length;
+
+  // Debater points: 100 per vote received
+  if (votesForA > 0) pts[round.debaterA] = votesForA * 100;
+  if (votesForB > 0) pts[round.debaterB] = votesForB * 100;
+
+  // Voter points: 50 for voting with majority (or tie)
+  const isTie = votesForA === votesForB;
+  const majorityChoice = votesForA > votesForB ? round.debaterA : round.debaterB;
+  for (const [voterId, votedFor] of Object.entries(round.votes)) {
+    if (isTie || votedFor === majorityChoice) {
+      pts[voterId] = (pts[voterId] ?? 0) + 50;
+    }
+  }
+
+  // AI guess points: 150 for correct guess
+  if (round.isAIAssistedRound && round.aiAssistedPlayer) {
+    for (const [guesserId, guess] of Object.entries(round.aiGuesses)) {
+      if (guess === round.aiAssistedPlayer) {
+        pts[guesserId] = (pts[guesserId] ?? 0) + 150;
+      }
+    }
+  }
+
+  return pts;
+}
+
 export default function HostResults({ state }: HostResultsProps) {
   const round = state.currentRound;
   if (!round) return null;
@@ -20,6 +59,10 @@ export default function HostResults({ state }: HostResultsProps) {
   const votesForB = Object.values(round.votes).filter(
     (v) => v === round.debaterB
   ).length;
+
+  const roundPoints = calcRoundPoints(state);
+  const pointsA = roundPoints[round.debaterA] ?? 0;
+  const pointsB = roundPoints[round.debaterB] ?? 0;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 gap-8">
@@ -50,9 +93,16 @@ export default function HostResults({ state }: HostResultsProps) {
             )}
           </div>
           <p className="text-neutral-300 leading-relaxed">{round.argumentA}</p>
-          <p className="mt-3 text-orange-500 font-bold text-lg">
-            {votesForA} vote{votesForA !== 1 ? "s" : ""}
-          </p>
+          <div className="flex items-center gap-3 mt-3">
+            <p className="text-orange-500 font-bold text-lg">
+              {votesForA} vote{votesForA !== 1 ? "s" : ""}
+            </p>
+            {pointsA > 0 && (
+              <span className="text-green-400 font-bold text-lg animate-score-pop">
+                +{pointsA}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="bg-neutral-900 rounded-2xl p-6">
@@ -72,9 +122,16 @@ export default function HostResults({ state }: HostResultsProps) {
             )}
           </div>
           <p className="text-neutral-300 leading-relaxed">{round.argumentB}</p>
-          <p className="mt-3 text-orange-500 font-bold text-lg">
-            {votesForB} vote{votesForB !== 1 ? "s" : ""}
-          </p>
+          <div className="flex items-center gap-3 mt-3">
+            <p className="text-orange-500 font-bold text-lg">
+              {votesForB} vote{votesForB !== 1 ? "s" : ""}
+            </p>
+            {pointsB > 0 && (
+              <span className="text-green-400 font-bold text-lg animate-score-pop">
+                +{pointsB}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

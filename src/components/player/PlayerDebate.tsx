@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { GameState, PlayerRole } from "@/lib/types";
 import Timer from "@/components/ui/Timer";
 
@@ -14,6 +14,19 @@ export default function PlayerDebate({ state, send, role }: PlayerDebateProps) {
   const round = state.currentRound;
   const [argument, setArgument] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  // Countdown state for round_start phase (3 -> 2 -> 1)
+  const [countdown, setCountdown] = useState(3);
+
+  useEffect(() => {
+    if (state.phase !== "round_start") {
+      setCountdown(3);
+      return;
+    }
+    if (countdown <= 0) return;
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 600);
+    return () => clearTimeout(timer);
+  }, [state.phase, countdown, round?.roundNumber]);
 
   if (!round) return null;
 
@@ -48,7 +61,13 @@ export default function PlayerDebate({ state, send, role }: PlayerDebateProps) {
         <p className="text-neutral-400">
           Round {round.roundNumber} of {state.totalRounds}
         </p>
-        <p className="text-neutral-400 text-lg animate-pulse">Get ready...</p>
+        <p
+          key={countdown}
+          className="text-6xl font-black text-orange-500 animate-countdown-pop"
+        >
+          {countdown > 0 ? countdown : "GO!"}
+        </p>
+        <p className="text-neutral-400 text-sm">Get ready...</p>
       </div>
     );
   }
@@ -119,7 +138,8 @@ export default function PlayerDebate({ state, send, role }: PlayerDebateProps) {
           <button
             onClick={handleUseAI}
             className="bg-amber-500 hover:bg-amber-400 text-black font-bold
-                       py-3 px-4 rounded-xl text-sm transition-colors w-full"
+                       py-3 px-4 rounded-xl text-sm transition-colors w-full
+                       focus-visible:ring-2 focus-visible:ring-orange-500"
           >
             Use AI Argument
           </button>
@@ -143,7 +163,8 @@ export default function PlayerDebate({ state, send, role }: PlayerDebateProps) {
         disabled={!argument.trim() && !aiArgument}
         className="bg-orange-500 hover:bg-orange-400 disabled:bg-neutral-700
                    disabled:text-neutral-500 text-white font-bold
-                   py-4 px-8 rounded-2xl text-xl transition-colors w-full"
+                   py-4 px-8 rounded-2xl text-xl transition-colors w-full
+                   focus-visible:ring-2 focus-visible:ring-orange-500"
       >
         Submit
       </button>
